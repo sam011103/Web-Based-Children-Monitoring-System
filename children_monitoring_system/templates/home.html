@@ -1,5 +1,134 @@
 {% extends "base.html" %}
 {% block title %}Home Page{% endblock %}
 {% block content %}
-<h1>Test</h1>
+<div class="py-3">
+    <div class="add-source-button-container">
+        <button class="btn btn-primary add-source-button mx-3 px-3 py-2" id="addSourceButton" onclick="loadCameras()" data-toggle="modal" data-target="#sourceSetupModal">
+            <i class="fa fa-camera fa-lg icon" aria-hidden="true"></i>Add Camera Source
+        </button>
+        <a href="" class="btn btn-success test-stream-btn mx-3 px-3 py-2">
+            <i class="fa fa-video-camera fa-lg icon" aria-hidden="true"></i>Test Stream
+        </a>
+    </div>
+</div>
+
+<div class="main-container" id="mainContainer">
+    {% if camera_sources %}
+        {# Uncomment if you want to display the sources #}
+        {# 
+        {% for camera_source in camera_sources %}
+            <div class="col-lg-4 col-md-6 col-sm-12 source-container" id="source-container-{{ forloop.counter0 }}" >
+                <h3 class="source-name">{{ camera_source.source_name }}</h3>
+                <!-- Add more details here if needed -->
+            </div>
+        {% endfor %}
+        #}
+    {% else %}
+        <h3>No camera source found.</h3>
+    {% endif %}
+</div>
+
+<div class="modal fade" id="sourceSetupModal" tabindex="-1" role="dialog" aria-labelledby="sourceSetupModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sourceSetupModalTitle">Camera Source Setup</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="addCameraSourceForm">
+                    {% csrf_token %}
+                    <div class="col-12 col-sm-9">
+                        <div class="form-group">
+                            <label for="source">Please select a camera source to setup</label><br>
+                            <select class="form-control" id="source" name="source_id">
+                                {# Add the options for the camera sources here #}
+                            </select>
+                            <span id="error-message-source" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="source_name">Source Name</label>
+                            <input type="text" class="form-control" id="source_name" name="source_name" placeholder="Enter Source Name" value="{{ form.source_name.value|default_if_none:'' }}">
+                            <span id="error-message-source-name" class="text-danger"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addCameraSource()">Add Source</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .main-container{
+        display: flex;
+        flex-wrap: wrap;
+        margin: 25px 50px 25px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 15px;
+        border-radius: 15px;
+    }
+    .source-container{
+        background: white;
+        padding: 0px !important;
+        border: black 1px solid;
+    }
+    .add-source-button-container{
+        display: flex;
+        justify-content: flex-end;
+        margin-right: 50px;
+        max-height: 100px;
+    }
+    .add-source-button{
+        color: white;
+        /* background:rgb(18, 182, 211); */
+        /* font-weight: bold; */
+        font-size: 18px;
+        /* flex: 0 0 13%;
+        max-width: 13% */
+    }
+    .test-stream-btn {
+        /* font-weight: bold; */
+        font-size: 18px;
+    }
+    .source-name {
+        position: absolute;
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        color: goldenrod; /* Text color */
+    }
+    .video-not-found {
+        background: black;
+        width: 100%;
+        height:100%;
+        min-height: 100px;
+        align-content: center;
+    }
+    .not-connected-message {
+        color: white;
+        text-align: center;
+    }
+    .icon {
+        margin-right: 10px;
+    }
+    video {
+        display: block;
+        object-fit: contain; /* Ensure all video elements have object-fit: contain */
+        width: 100%; /* Make sure the video fits the container */
+    }
+    @media only screen and (max-width: 768px) {
+        .video-not-found {
+            min-height: 300px;
+        }
+    }
+</style>
 {% endblock %}

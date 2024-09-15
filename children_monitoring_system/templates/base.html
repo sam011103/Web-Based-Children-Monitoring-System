@@ -83,6 +83,35 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        toastr.options = {
+           "closeButton": true,
+           "debug": false,
+           "newestOnTop": true,
+           "progressBar": true,
+           "positionClass": "toast-top-center", // Position in the top center
+           "preventDuplicates": true,
+           "onclick": null,
+           "showDuration": "300",
+           "hideDuration": "1000",
+           "timeOut": "7500", // Display notification for 10 seconds
+           "extendedTimeOut": "2000", // Additional 2 seconds on hover
+           "showEasing": "swing",
+           "hideEasing": "linear",
+           "showMethod": "fadeIn",
+           "hideMethod": "fadeOut"
+       };
+   </script>
+   
+    {% if messages %}
+        {% for message in messages %}
+        <script>
+            toastr["{{ message.tags }}"]("{{ message }}");
+        </script>
+        {% endfor %}
+    {% endif %}
+
     {% block extra_script %}
     {% endblock %}
 
@@ -93,25 +122,5 @@
         {% block content %}
         {% endblock %}
     </div>
-
-    <script>
-         toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": true,
-            "positionClass": "toast-top-center", // Position in the top center
-            "preventDuplicates": true,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "7500", // Display notification for 10 seconds
-            "extendedTimeOut": "2000", // Additional 2 seconds on hover
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        };
-    </script>
 </body>
 </html>

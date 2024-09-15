@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.template import loader
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from ..forms import LoginForm, RegisterForm
 from django.contrib.auth import authenticate, login, logout
@@ -12,7 +13,7 @@ from ..models import User
 @csrf_exempt
 def loginIndex(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = LoginForm(request.POST) 
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -21,6 +22,7 @@ def loginIndex(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                messages.info(request, "Welcome, {}".format(user.full_name))
                 if remember_me:
                     request.session.set_expiry(1209600)  # Set session expiry to 2 weeks
                 return JsonResponse({'redirect_url': '/home'})
@@ -32,27 +34,41 @@ def loginIndex(request):
         form = LoginForm()
         return render(request, 'login.html', {'form': form})
 
-def registerIndex(request):
-    if request.method == 'POST':
+# def registerIndex(request):
+#     if request.method == 'POST':
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             # Create and save the new user
+#             user = User(
+#                 username=form.cleaned_data['username'],
+#                 password=make_password(form.cleaned_data['password']),
+#                 email=form.cleaned_data['email'],
+#                 full_name=form.cleaned_data['full_name'],  # Assuming using 'first_name' for full_name
+#                 date_joined=timezone.now()
+#             )
+#             user.save()
+
+#             messages.success(request, 'Registration successful!')
+#             return redirect('login')
+#     else:
+#         form = RegisterForm()
+
+#     return render(request, 'register.html', {'form': form})
+
+class UserRegisterView(View):
+    def get(self, request):
+        form = RegisterForm()
+        return render(request, 'registration/register.html', {'form': form})
+
+    def post(self, request):
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # Create and save the new user
-            user = User(
-                username=form.cleaned_data['username'],
-                password=make_password(form.cleaned_data['password']),
-                email=form.cleaned_data['email'],
-                full_name=form.cleaned_data['full_name'],  # Assuming using 'first_name' for full_name
-                date_joined=timezone.now()
-            )
-            user.save()
-
-            messages.success(request, 'Registration successful!')
-            return redirect('login')
-    else:
-        form = RegisterForm()
-
-    return render(request, 'register.html', {'form': form})
-
+            user = form.save()
+            messages.success(request, "Registration successful!")
+            return redirect('login')  # Redirect to your desired page after registration
+        print(form.errors)
+        return render(request, 'registration/register.html', {'form': form})
+    
 def logoutIndex(request):
     logout(request)
     return redirect('login')
