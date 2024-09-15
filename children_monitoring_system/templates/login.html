@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+<div class='form-container mt-5 py-3 mb-5'>
+	<form id="login" class='col-12'>
+		<h2><strong>Credential Login</strong></h2>
+		<div class="mt-3">
+			<div class="form-group">
+				{{ form.username.label_tag }} {{ form.username }}
+				<span id="error-message-username" class="text-danger"></span>
+			</div>
+			<div class="form-group password-container">
+				{{ form.password.label_tag }}
+				{{ form.password }}
+				<!-- <input type="checkbox" id="show-password" class="show-password-checkbox" onclick="togglePassword()"> -->
+				<span id="error-message-login-failed" class="text-danger"></span>
+			</div>
+			<div class="form-check">
+				{{ form.remember_me }}
+				{{ form.remember_me.label_tag }}
+			</div>
+			<button type="submit" class="btn btn-primary mt-3 mb-3">Login</button>
+		</div>
+		<a href="/register" style="text-decoration: underline">Do not have an account yet? Register here.</a>
+	</form>     
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+	/* .password-container {
+    position: relative;
+}
+
+.show-password-checkbox {
+    position: absolute;
+    top: 73%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.checkbox-label {
+    margin-left: 25px;
+    cursor: pointer;
+}
+
+.form-control {
+    padding-right: 40px;
+} */
+</style>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+	// function getCookie(name) {
+	// 	let cookieValue = null;
+	// 	if (document.cookie && document.cookie !== '') {
+	// 		const cookies = document.cookie.split(';');
+	// 		for (let i = 0; i < cookies.length; i++) {
+	// 			const cookie = cookies[i].trim();
+	// 			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	// 				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// 	return cookieValue;
+	// }
+
+	// const csrftoken = getCookie('csrftoken');
+
+	function togglePassword() {
+        var passwordInput = document.getElementById('password');
+        var checkbox = document.getElementById('show-password');
+
+        if (checkbox.checked) {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    }
+
+	function login(event)
+	{
+		event.preventDefault();
+		$.ajax({
+            url: '{% url "login" %}',  // Adjust the URL to match the Django URL pattern name
+            type: 'POST',
+            data: {
+                username: $('#username').val(),
+                password: $('#password').val(),
+                remember_me: $('#remember_me').is(':checked'),
+                csrfmiddlewaretoken: '{{ csrf_token }}'  // Use Django's CSRF token
+            },
+            success: function(response) {
+                // Handle successful authentication
+                if (response.redirect_url) {
+                    window.location.href = response.redirect_url;
+                }
+            },
+            error: function(xhr) {
+                if (xhr.responseJSON.errors) {
+                    const errors = xhr.responseJSON.errors;
+                    $('#error-message-username').text('');
+                    $('#error-message-password').text('');
+                    $('#error-message-login-failed').text('');
+
+                    // Check for username errors
+                    if (errors.username) {
+                        $('#error-message-username').text(errors.username[0]);
+                    }
+
+                    // Check for password errors
+                    if (errors.password) {
+                        $('#error-message-password').text(errors.password[0]);
+                    }
+
+                    // Check for login failure message
+                    if (errors.login_failed) {
+                        $('#error-message-login-failed').text(errors.login_failed[0]);
+                        $('#password').val("");  // Clear password field on failure
+                    }
+                }
+            }
+        });
+	}
+
+	$(document).ready(function() {
+        $('#login').on('submit', function(event) {
+            login(event); // Call the login function
+        });
+    });
+	
+</script>
+{% endblock %}

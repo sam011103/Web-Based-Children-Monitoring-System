@@ -1,0 +1,32 @@
+<div class="sidebar" id="sidebar">
+    <a href="/home"><i class="fas fa-home fa-lg"></i> Home</a>
+    <a href="/gallery"><i class="fas fa-image fa-lg"></i> Gallery</a>
+    <a href="/logout" onclick="clearWelcomeMessageFlag()"><i class="fas fa-sign-out-alt fa-lg"></i> Logout</a>
+</div>
+
+<style>
+    .sidebar {
+        width: 0;
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        background: #2c3e50;
+        overflow-x: hidden;
+        transition: 0.5s;
+        border-top: 1px white solid;
+        min-height: 100vh;
+    }
+
+    .sidebar a {
+        min-height: 70px;
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 28px;
+        color: white;
+        display: block;
+        transition: 0.3s;
+        border-bottom: 1px solid white;
+        white-space: nowrap;
+        align-content: center;
+    }
+</style>
